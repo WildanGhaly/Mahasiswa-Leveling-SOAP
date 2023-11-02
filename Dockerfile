@@ -8,11 +8,11 @@ WORKDIR /app
 COPY .env /app/.env
 
 # Salin file jar ke dalam container di lokasi `/app`
-COPY target/my-app.jar /app/my-app.jar
+COPY target/SOAP_Service-1.0-SNAPSHOT.jar /app/SOAP_Service-1.0-SNAPSHOT.jar
 COPY lib/*.jar /app/lib/
 
 # Ekspose port 
 EXPOSE 8081
 
 # Jalankan aplikasi
-CMD ["java", "-cp", "/app/lib/*:/app/my-app.jar", "org.example.Main"]
+CMD ["java", "-cp", "/app/lib/*:/app/SOAP_Service-1.0-SNAPSHOT.jar", "org.example.Main"]
