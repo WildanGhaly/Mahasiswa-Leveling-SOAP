@@ -9,8 +9,8 @@ public class Database {
 
     private Dotenv dotenv           = Dotenv.load();
     private String DB_URL           = dotenv.get("DB_URL");
-    private String DB_USERNAME      = dotenv.get("DB_USERNAME");
-    private String DB_PASSWORD      = dotenv.get("DB_PASSWORD");
+    private String DB_USERNAME      = dotenv.get("MYSQL_USER");
+    private String DB_PASSWORD      = dotenv.get("MYSQL_PASSWORD");
 
     public Database(){
         try {
@@ -18,6 +18,9 @@ public class Database {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error connecting to database");
+            System.out.println("DB_URL: " + DB_URL);
+            System.out.println("DB_USERNAME: " + DB_USERNAME);
+            System.out.println("DB_PASSWORD: " + DB_PASSWORD);
         }
     }
 
