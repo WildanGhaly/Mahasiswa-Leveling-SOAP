@@ -7,8 +7,6 @@
     <list default="true" id="ee40c77e-b139-4db4-996f-b3cb2d71fcb8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/core/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/core/Database.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/model/ChallengeDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/model/ChallengeDAOImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/ChallengeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/ChallengeServiceImpl.java" afterDir="false" />
@@ -124,6 +122,8 @@
       <workItem from="1698718621283" duration="1017000" />
       <workItem from="1698724942993" duration="1887000" />
       <workItem from="1698746092427" duration="4733000" />
+      <workItem from="1698801369215" duration="332000" />
+      <workItem from="1698819443757" duration="2593000" />
     </task>
     <servers />
   </component>
