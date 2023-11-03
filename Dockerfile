@@ -1,18 +1,19 @@
-# Imagenya java 8
-FROM openjdk:8-jdk-alpine
+FROM maven:3.8.6-amazoncorretto-8 AS build
 
-# Workdir dibuat /app
+COPY . /app
+
 WORKDIR /app
 
-# Salin file .env ke dalam container
-COPY .env /app/.env
+RUN --mount=type=cache,target=/root/.m2 mvn clean install
 
-# Salin file jar ke dalam container di lokasi `/app`
-COPY target/SOAP_Service-1.0-SNAPSHOT.jar /app/SOAP_Service-1.0-SNAPSHOT.jar
-COPY lib/*.jar /app/lib/
+FROM amazoncorretto:8
 
-# Ekspose port 
+COPY --from=build /app/target /app
+
+COPY .env /app
+
+WORKDIR /app
+
 EXPOSE 8081
 
-# Jalankan aplikasi
-CMD ["java", "-cp", "/app/lib/*:/app/SOAP_Service-1.0-SNAPSHOT.jar", "org.example.Main"]
+CMD java -cp SOAP_Service-1.0-SNAPSHOT.jar org.example.Main
