@@ -2,11 +2,12 @@
 package org.example.service;
 
 import javax.annotation.Resource;
+import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import com.sun.net.httpserver.HttpExchange;
-
+import java.sql.PreparedStatement;
 
 import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import org.example.model.Challenge;
@@ -19,6 +20,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+
 @WebService
 public class TopupServiceImpl implements TopupService {
 
@@ -26,14 +28,13 @@ public class TopupServiceImpl implements TopupService {
     public WebServiceContext wsContext;
 
    public Boolean checkApiKey() {
-       String[] API_KEYS = { "test" };
+       String[] API_KEYS = { "RestClient" , "PHPClient" };
        MessageContext msgContext = wsContext.getMessageContext();
        HttpExchange httpExchange = (HttpExchange) msgContext.get("com.sun.xml.internal.ws.http.exchange");
        String apiKey = httpExchange.getRequestHeaders().getFirst("X-API-Key");
        if (apiKey == null) {
          return false;
-       } else if (apiKey.equals(API_KEYS[0]) || apiKey.equals(API_KEYS[1]) || apiKey.equals(API_KEYS[2])
-           || apiKey.equals(API_KEYS[3])) {
+       } else if (apiKey.equals(API_KEYS[0]) || apiKey.equals(API_KEYS[1])) {
          return true;
        } else {
          return false;
@@ -57,20 +58,30 @@ public class TopupServiceImpl implements TopupService {
     }
 }
 
-
+    @WebMethod
     @Override
-    public int topupPoint(int userId, int cost) {
+    public int topupPoint(int restId, int balance) {
+        if (!checkApiKey()) {
+            return 0;
+        }
         Database db = new Database();
         Connection connection = db.getConnection();
+        System.out.println(restId);
+        System.out.println(balance);
         try {
-            Statement statement = connection.createStatement();
-            String query = "SELECT";
-            ResultSet result = statement.executeQuery(query);
-            log("topup point");
-                return 1;
+            String query = "UPDATE currency SET uang = uang + ? WHERE user_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, balance); 
+            preparedStatement.setInt(2, restId);
+            int rowsAffected = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+            log("topup with user id " + restId + " and total " + balance + " point");
+            return 1;
+
         } catch (Exception e) {
             e.printStackTrace();
-            log("Error creating subscription");
+            log("Error when topuping user id " + restId + " and total " + balance + " point");
             return 0;
         }
     }
