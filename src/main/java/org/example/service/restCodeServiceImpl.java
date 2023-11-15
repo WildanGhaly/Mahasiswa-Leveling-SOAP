@@ -1,4 +1,3 @@
-
 package org.example.service;
 
 import javax.annotation.Resource;
@@ -22,7 +21,7 @@ import java.sql.Statement;
 
 
 @WebService
-public class TopupServiceImpl implements TopupService {
+public class restCodeServiceImpl implements restCodeService {
 
     @Resource
     public WebServiceContext wsContext;
@@ -60,28 +59,28 @@ public class TopupServiceImpl implements TopupService {
 
     @WebMethod
     @Override
-    public int topupPoint(int restId, int balance) {
-        if (!checkApiKey()) {
-            return 0;
-        }
+    public int restCode(String username, String code) {
+       if (!checkApiKey()) {
+           return 0;
+       }
         Database db = new Database();
         Connection connection = db.getConnection();
-        System.out.println(restId);
-        System.out.println(balance);
+        System.out.println(username);
+        System.out.println(code);
         try {
-            String query = "UPDATE currency SET uang = uang + ? WHERE user_id = ?";
+            String query = "INSERT INTO rest_code (username_php, code) VALUES (?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, balance); 
-            preparedStatement.setInt(2, restId);
+            preparedStatement.setString(1, username); 
+            preparedStatement.setString(2, code);
             int rowsAffected = preparedStatement.executeUpdate();
             preparedStatement.close();
             connection.close();
-            log("topup with user id " + restId + " and total " + balance + " point");
+            log("register code username " + username);
             return 1;
 
         } catch (Exception e) {
             e.printStackTrace();
-            log("Error when topuping user id " + restId + " and total " + balance + " point");
+            log("Error when register code username " + username);
             return 0;
         }
     }
