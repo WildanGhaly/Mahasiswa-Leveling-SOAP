@@ -18,11 +18,12 @@ import org.w3c.dom.Element;
 import java.security.Principal;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 
 @WebService
-public class TopupServiceImpl implements TopupService {
+public class buyProductServiceImpl implements buyProductService {
 
     @Resource
     public WebServiceContext wsContext;
@@ -60,7 +61,7 @@ public class TopupServiceImpl implements TopupService {
 
     @WebMethod
     @Override
-    public int topupPoint(int restId, int balance) {
+    public int buyProduct(int restId, int productId, int quantity, int balance) {
         if (!checkApiKey()) {
             return 0;
         }
@@ -69,21 +70,54 @@ public class TopupServiceImpl implements TopupService {
         System.out.println(restId);
         System.out.println(balance);
         try {
-            String query = "UPDATE soap_connector SET uang = uang + ? WHERE user_id_Rest = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, balance); 
-            preparedStatement.setInt(2, restId);
-            int rowsAffected = preparedStatement.executeUpdate();
-            preparedStatement.close();
-            connection.close();
-            log("topup with user id " + restId + " and total " + balance + " point");
-            return 1;
+            connection.setAutoCommit(false);
+            String balanceQuery = "SELECT uang FROM soap_connector WHERE user_id_Rest = ?";
+            PreparedStatement balanceStatement = connection.prepareStatement(balanceQuery);
+            balanceStatement.setInt(1, restId);
+            ResultSet balanceResult = balanceStatement.executeQuery();
 
-        } catch (Exception e) {
+            int currentBalance = 0;
+            if (balanceResult.next()) {
+                currentBalance = balanceResult.getInt("uang");
+            }
+            if (currentBalance < balance) {
+                balanceResult.close();
+                balanceStatement.close();
+                connection.close();
+                return 0;
+            }
+            
+            String updateQuery = "UPDATE soap_connector SET uang = uang - ? WHERE user_id_Rest = ?";
+            PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+            updateStatement.setInt(1, balance);
+            updateStatement.setInt(2, restId);
+            int rowsAffected = updateStatement.executeUpdate();
+
+
+            String historyInsertQuery = "INSERT INTO history (user_id, product_id, quantity) VALUES (?, ?, ?)";
+            PreparedStatement historyInsertStatement = connection.prepareStatement(historyInsertQuery);
+            historyInsertStatement.setInt(1, restId); 
+            historyInsertStatement.setInt(2, productId); 
+            historyInsertStatement.setInt(3, quantity); 
+
+            int rowsInserted = historyInsertStatement.executeUpdate();
+            historyInsertStatement.close();
+
+            balanceResult.close();
+            balanceStatement.close();
+            updateStatement.close();
+            connection.commit();
+            // connection.close();
+            
+            log("buying product " + productId + " user id " + restId + " quantity " + quantity + " and total " + balance);
+            
+            return 1;
+            
+        } catch (SQLException e) {
             e.printStackTrace();
-            log("Error when topuping user id " + restId + " and total " + balance + " point");
-            return 0;
-        }
+            log("Error when buying product " + productId + " user id " + restId + " quantity " + quantity + " and total " + balance);
+            return -1;
+        } 
     }
 
     

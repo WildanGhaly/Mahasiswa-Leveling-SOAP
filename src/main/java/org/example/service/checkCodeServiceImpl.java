@@ -22,7 +22,7 @@ import java.sql.Statement;
 
 
 @WebService
-public class TopupServiceImpl implements TopupService {
+public class checkCodeServiceImpl implements checkCodeService {
 
     @Resource
     public WebServiceContext wsContext;
@@ -60,28 +60,45 @@ public class TopupServiceImpl implements TopupService {
 
     @WebMethod
     @Override
-    public int topupPoint(int restId, int balance) {
+    public int checkCode(String code, int restId) {
         if (!checkApiKey()) {
             return 0;
         }
         Database db = new Database();
         Connection connection = db.getConnection();
         System.out.println(restId);
-        System.out.println(balance);
+        System.out.println(code);
         try {
-            String query = "UPDATE soap_connector SET uang = uang + ? WHERE user_id_Rest = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, balance); 
-            preparedStatement.setInt(2, restId);
-            int rowsAffected = preparedStatement.executeUpdate();
-            preparedStatement.close();
+            connection.setAutoCommit(false);
+            
+            String codeCheckQuery = "SELECT * FROM soap_connector WHERE code = ? AND user_id_Rest IS NULL";
+            PreparedStatement codeCheckStatement = connection.prepareStatement(codeCheckQuery);
+            codeCheckStatement.setString(1, code);
+            ResultSet codeCheckResult = codeCheckStatement.executeQuery();
+
+            if (!codeCheckResult.next()) {
+                codeCheckResult.close();
+                codeCheckStatement.close();
+                connection.close();
+                log("Invalid code: " + code);
+                return 0;
+            }
+            String updateRestCodeQuery = "UPDATE soap_connector SET user_id_Rest = ? WHERE code = ? AND user_id_Rest IS NULL";
+            PreparedStatement updateStatement = connection.prepareStatement(updateRestCodeQuery);
+            updateStatement.setInt(1, restId);
+            updateStatement.setString(2, code);
+            int rowsAffected = updateStatement.executeUpdate();
+            updateStatement.close();
+            codeCheckResult.close();
+            codeCheckStatement.close();
+            connection.commit();
             connection.close();
-            log("topup with user id " + restId + " and total " + balance + " point");
+            log("check code with code " + code + " success");
             return 1;
 
         } catch (Exception e) {
             e.printStackTrace();
-            log("Error when topuping user id " + restId + " and total " + balance + " point");
+            log("Error when check code with code " + code);
             return 0;
         }
     }

@@ -22,7 +22,7 @@ import java.sql.Statement;
 
 
 @WebService
-public class TopupServiceImpl implements TopupService {
+public class getHistoryServiceImpl implements getHistoryService {
 
     @Resource
     public WebServiceContext wsContext;
@@ -60,29 +60,28 @@ public class TopupServiceImpl implements TopupService {
 
     @WebMethod
     @Override
-    public int topupPoint(int restId, int balance) {
+    public String getHistory (int restId) {
         if (!checkApiKey()) {
-            return 0;
+            return "Failed";
         }
         Database db = new Database();
         Connection connection = db.getConnection();
         System.out.println(restId);
-        System.out.println(balance);
         try {
-            String query = "UPDATE soap_connector SET uang = uang + ? WHERE user_id_Rest = ?";
+            String query = "UPDATE currency SET uang = uang + ? WHERE user_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, balance); 
+//            preparedStatement.setInt(1, balance);
             preparedStatement.setInt(2, restId);
             int rowsAffected = preparedStatement.executeUpdate();
             preparedStatement.close();
             connection.close();
-            log("topup with user id " + restId + " and total " + balance + " point");
-            return 1;
+            log("get buying history with user id " + restId);
+            return "";
 
         } catch (Exception e) {
             e.printStackTrace();
-            log("Error when topuping user id " + restId + " and total " + balance + " point");
-            return 0;
+            log("Error when get buying history user id " + restId);
+            return "Failed";
         }
     }
 
