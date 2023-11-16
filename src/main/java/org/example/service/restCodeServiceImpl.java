@@ -59,28 +59,38 @@ public class restCodeServiceImpl implements restCodeService {
 
     @WebMethod
     @Override
-    public int restCode(String username, String code) {
+    public int restCode(int userId, String code) {
        if (!checkApiKey()) {
            return 0;
        }
         Database db = new Database();
         Connection connection = db.getConnection();
-        System.out.println(username);
+        System.out.println(userId);
         System.out.println(code);
         try {
-            String query = "INSERT INTO rest_code (username_php, code) VALUES (?,?)";
+            // connection.setAutoCommit(false);
+            String query = "INSERT INTO soap_connector (user_id_php, code, point, uang) VALUES (?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, username); 
+            preparedStatement.setInt(1, userId); 
             preparedStatement.setString(2, code);
+            preparedStatement.setInt(3, 0);
+            preparedStatement.setInt(4, 0);
             int rowsAffected = preparedStatement.executeUpdate();
             preparedStatement.close();
+            // String currencyInsertQuery = "INSERT INTO currency (username_php, point, uang) VALUES (?, ?, ?)";
+            // PreparedStatement currencyInsertStatement = connection.prepareStatement(currencyInsertQuery);
+            // currencyInsertStatement.setString(1, username);
+            // currencyInsertStatement.setInt(2, 0);
+            // currencyInsertStatement.setInt(3, 0);
+            // int currencyRowsAffected = currencyInsertStatement.executeUpdate();
+            // currencyInsertStatement.close();
+            // connection.commit();
             connection.close();
-            log("register code username " + username);
+            log("register code php_user_id " + userId + " success");
             return 1;
-
         } catch (Exception e) {
             e.printStackTrace();
-            log("Error when register code username " + username);
+            log("Error when register code php_user_id " + userId);
             return 0;
         }
     }
