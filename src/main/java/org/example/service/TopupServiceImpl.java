@@ -69,7 +69,7 @@ public class TopupServiceImpl implements TopupService {
         System.out.println(restId);
         System.out.println(balance);
         try {
-            String query = "UPDATE currency SET uang = uang + ? WHERE user_id = ?";
+            String query = "UPDATE soap_connector SET uang = uang + ? WHERE user_id_Rest = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, balance); 
             preparedStatement.setInt(2, restId);
