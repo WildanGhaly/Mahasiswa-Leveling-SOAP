@@ -71,14 +71,14 @@ public class buyProductServiceImpl implements buyProductService {
         System.out.println(balance);
         try {
             connection.setAutoCommit(false);
-            String balanceQuery = "SELECT uang FROM soap_connector WHERE user_id_Rest = ?";
+            String balanceQuery = "SELECT point FROM soap_connector WHERE user_id_Rest = ?";
             PreparedStatement balanceStatement = connection.prepareStatement(balanceQuery);
             balanceStatement.setInt(1, restId);
             ResultSet balanceResult = balanceStatement.executeQuery();
 
             int currentBalance = 0;
             if (balanceResult.next()) {
-                currentBalance = balanceResult.getInt("uang");
+                currentBalance = balanceResult.getInt("point");
             }
             if (currentBalance < balance) {
                 balanceResult.close();
@@ -87,7 +87,7 @@ public class buyProductServiceImpl implements buyProductService {
                 return 0;
             }
             
-            String updateQuery = "UPDATE soap_connector SET uang = uang - ? WHERE user_id_Rest = ?";
+            String updateQuery = "UPDATE soap_connector SET point = point - ? WHERE user_id_Rest = ?";
             PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
             updateStatement.setInt(1, balance);
             updateStatement.setInt(2, restId);
