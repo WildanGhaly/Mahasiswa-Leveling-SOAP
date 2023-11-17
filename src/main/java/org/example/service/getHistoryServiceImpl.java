@@ -68,15 +68,28 @@ public class getHistoryServiceImpl implements getHistoryService {
         Connection connection = db.getConnection();
         System.out.println(restId);
         try {
-            String query = "UPDATE currency SET uang = uang + ? WHERE user_id = ?";
+            String query = "SELECT * FROM history WHERE user_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-//            preparedStatement.setInt(1, balance);
-            preparedStatement.setInt(2, restId);
-            int rowsAffected = preparedStatement.executeUpdate();
+            preparedStatement.setInt(1, restId);
+            ResultSet result = preparedStatement.executeQuery();;
+            Boolean found = false;
+            String json = "{\"data\": [";
+            while (result.next()) {
+                json += "{\"product_id\": " + result.getInt("product_id") + ", \"quantity\": "
+                    + result.getInt("quantity") + ", \"timestamp\": "
+                    + result.getString("timestamp") + ", \"history_id\": \"" + result.getInt("history_id") + "\"},";
+                found = true;
+            }
+            json = json.substring(0, json.length() - 1);
+            json += "]}";
+            if (!found) {
+                json = "{\"data\": []}";
+            }
+
             preparedStatement.close();
             connection.close();
             log("get buying history with user id " + restId);
-            return "";
+            return json;
 
         } catch (Exception e) {
             e.printStackTrace();
