@@ -19,6 +19,7 @@ import java.security.Principal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import org.example.service.*;
 
 
 @WebService
@@ -60,7 +61,7 @@ public class TopupServiceImpl implements TopupService {
 
     @WebMethod
     @Override
-    public int topupPoint(int restId, int balance) {
+    public int topupPoint(int restId, int balance, String email) {
         if (!checkApiKey()) {
             return 0;
         }
@@ -68,6 +69,7 @@ public class TopupServiceImpl implements TopupService {
         Connection connection = db.getConnection();
         System.out.println(restId);
         System.out.println(balance);
+        
         try {
             String query = "UPDATE soap_connector SET uang = uang + ? WHERE user_id_Rest = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -76,6 +78,8 @@ public class TopupServiceImpl implements TopupService {
             int rowsAffected = preparedStatement.executeUpdate();
             preparedStatement.close();
             connection.close();
+            emailService emailSender = new emailService(); 
+            emailSender.sendEmailTopUpSuccess(email, balance);
             log("topup with user id " + restId + " and total " + balance + " point");
             return 1;
 
