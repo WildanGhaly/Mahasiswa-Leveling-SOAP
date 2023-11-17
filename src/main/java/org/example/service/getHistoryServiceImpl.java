@@ -68,7 +68,7 @@ public class getHistoryServiceImpl implements getHistoryService {
         Connection connection = db.getConnection();
         System.out.println(restId);
         try {
-            String query = "SELECT * FROM history WHERE user_id = ? ORDER BY timestamp LIMIT 50";
+            String query = "SELECT * FROM history WHERE user_id = ? ORDER BY timestamp DESC LIMIT 50";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, restId);
             ResultSet result = preparedStatement.executeQuery();;
