@@ -77,7 +77,7 @@ public class getHistoryServiceImpl implements getHistoryService {
             while (result.next()) {
                 json += "{\"product_id\": " + result.getInt("product_id") + ", \"quantity\": "
                     + result.getInt("quantity") + ", \"timestamp\": "
-                    + result.getString("timestamp") + ", \"history_id\": \"" + result.getInt("history_id") + "\"},";
+                    + "\"" + result.getString("timestamp") + "\"" + ", \"history_id\": \"" + result.getInt("history_id") + "\"},";
                 found = true;
             }
             json = json.substring(0, json.length() - 1);
