@@ -11,6 +11,9 @@ public class Main {
             Endpoint.publish("http://0.0.0.0:8081/code", new restCodeServiceImpl());
             Endpoint.publish("http://0.0.0.0:8081/buyProduct", new buyProductServiceImpl());
             Endpoint.publish("http://0.0.0.0:8081/checkCode", new checkCodeServiceImpl());
+            Endpoint.publish("http://0.0.0.0:8081/getCurrency", new getCurrencyServiceImpl());
+            Endpoint.publish("http://0.0.0.0:8081/getHistory", new getHistoryServiceImpl());
+            Endpoint.publish("http://0.0.0.0:8081/uangConverter", new uangConverterServiceImpl());
             
             System.out.println("Server started");
         } catch (Exception e) {
